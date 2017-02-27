@@ -94,3 +94,30 @@ body {
   position: absolute;
   right: 0px;
 }
+
+/* New Styles */
+
+.btn-glyphicon {
+    padding:8px;
+    background:#ffffff;
+    margin-right:4px;
+}
+.icon-btn {
+    padding: 1px 15px 3px 2px;
+    border-radius:50px;
+}
+
+.marginTopBottom{
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+/* Return Styles */
+
+.tab-content {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+}
+
