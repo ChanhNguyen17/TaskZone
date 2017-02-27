@@ -95,17 +95,18 @@
                      </h3>
                     <div type="button" class="btn-group">
                       
-                    <label class="btn btn-success" ng-repeat="name in names" for="{{name}}">
-                   <input type="radio"
+                    <label class="btn btn-success" ng-repeat="sort in sortList" for="{{sort}}" ng-class="{'active' : testObject(sort)}">
+                   <input style='display:none'
+                          type="radio"
                           class="list-group-item list-group-item-action"
-                          ng-model="my.favorite"
-                          ng-value="name"
-                          id="{{name}}"
-                          name="favorite"><h4>{{name}}</h4>
+                          ng-model="sortBy.choose"
+                          ng-value="sort"
+                          id="{{sort}}"
+                          name="choose"><h4>{{sort}}</h4>
                    </input>
                  </label>
                     </div>    
-               <div>You chose {{my.favorite}}</div>
+               <div>You chose {{sortBy.choose}}</div>
                                  
                 </div>
                 
@@ -124,7 +125,7 @@
                 <!-- Tab panes -->
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane fade in active" id="assignList">
-                        <blockquote ng-repeat="task in tasks | filter: filterAssign | orderBy:my.favorite">
+                        <blockquote ng-repeat="task in tasks | filter: filterAssign | orderBy:sortBy.choose">
                         <div class="media">
                             <div class="media-body">
                             <h2 class="media-heading">
@@ -143,7 +144,7 @@
                     </blockquote>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="personalList">
-                        <blockquote ng-repeat="task in tasks | filter: filterPersonal | orderBy:sortBy">
+                        <blockquote ng-repeat="task in tasks | filter: filterPersonal | orderBy:sortBy.choose">
                         <div class="media">
                             <div class="media-body">
                             <h2 class="media-heading">
@@ -162,7 +163,7 @@
                     </blockquote>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="historyList">
-                        <blockquote ng-repeat="task in tasks | filter: filterHistory | orderBy:sortBy">
+                        <blockquote ng-repeat="task in tasks | filter: filterHistory | orderBy:sortBy.choose">
                         <div class="media">
                             <div class="media-body">
                             <h2 class="media-heading">

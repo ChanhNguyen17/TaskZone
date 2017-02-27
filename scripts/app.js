@@ -3,14 +3,16 @@
 angular.module('lush', [])
 
 .controller('TaskController', function($scope) {
-    
-    $scope.names = ['date', 'title'];
-    $scope.my = { favorite: '-date' };
-    
-    $scope.sortList = ['date', 'title'];
-    $scope.sortBy = '-date';
-    console.log($scope.sortBy);
 
+    $scope.sortList = ['title', 'date'];
+    $scope.sortBy = { choose: 'title' };
+    console.log($scope.sortBy);
+    
+    $scope.testObject = function(sortObj){
+        return sortObj == $scope.sortBy.choose;
+    };
+    
+    // Filter Tab panel
     $scope.filterAssign = function (task){
         if(!task.isPersonal && !task.isDone){
             return task;
