@@ -27,7 +27,8 @@
     <![endif]-->
 </head>
 
-<body>
+<body ng-click=''>
+    
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -46,6 +47,9 @@
                     <li><a href="#"><i class="fa fa-envelope-o"></i> Profile</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <li><a id="addUserButton">
+                    <span class="glyphicon glyphicon-log-in"></span> Add User</a>
+                    </li>
                     <li><a id="loginButton">
                     <span class="glyphicon glyphicon-log-in"></span> Login</a>
                     </li>
@@ -62,7 +66,7 @@
                 <h4 class="modal-title">Login </h4>
             </div>
             <div class="modal-body">
-                <form>
+                <form id="loginForm">
                     <div class="form-group">
                         <label class="sr-only" for="username">Username</label>
                         <input type="email" class="form-control" id="username" placeholder="Username">
@@ -83,12 +87,41 @@
         </div>
     </div>
     
-    <div class="container">
+    <div id="addUserModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add User </h4>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label class="sr-only" for="username">Username</label>
+                        <input type="text" class="form-control" id="usernameNew" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="password">Password</label>
+                        <input type="password" class="form-control" id="passwordNew" placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn btn-info">Add User</button>
+                    <button type="button" class="btn btn-default"
+                       data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+    
+    <div class="container" ng-controller="UserController">
         <div class="row row-content" ng-controller="TaskController">
             <div class="col-xs-12">
             </div>
             <div class="col-xs-12 col-sm-9 col-sm-offset-1">
                 <div class="row">
+                    
+<!--
                 <div class="col-xs-12 col-sm-3 col-sm-push-9">
                     <h3>
                     Sort by:
@@ -109,40 +142,48 @@
                <div>You chose {{sortBy.choose}}</div>
                                  
                 </div>
+-->
                 
-                <div class="col-xs-12 col-sm-9 col-sm-pull-3 marginTopBottom">
+                <div class="col-xs-12 col-sm-9 marginTopBottom">
                 <ul class="nav nav-tabs" role="tablist">
+                    
+                    <li role="presentation"><a href="#allList"
+                     aria-controls="allList" role="tab"
+                     data-toggle="tab">ALL</a></li>
                     <li role="presentation" class="active">
                     <a href="#assignList" aria-controls="assignList"
-                     role="tab" data-toggle="tab">Assign tasks</a></li>
+                     role="tab" data-toggle="tab">Unfinished tasks</a></li>
                     <li role="presentation"><a href="#personalList"
                      aria-controls="personalList" role="tab"
                      data-toggle="tab">Personal tasks</a></li>
                     <li role="presentation"><a href="#historyList"
                      aria-controls="historyList" role="tab"
-                     data-toggle="tab">History</a></li>
+                     data-toggle="tab">Done</a></li>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
+                    
                     <div role="tabpanel" class="tab-pane fade in active" id="assignList">
                         <blockquote ng-repeat="task in tasks | filter: filterAssign | orderBy:sortBy.choose">
-                        <div class="media">
+                          
+                            <div class="media">
                             <div class="media-body">
                             <h2 class="media-heading">
-                            {{task.title}}
+                            {{task.text}}
                             </h2>
-                            <h6 class="media-heading">
-                                To: {{task.assignee}}
-                                </h6>
-                        <p>{{task.description}}</p>
-                        <footer>
-                            {{task.assigner}}, {{task.date | date}}
+                            <footer>
+                            {{task.dueDate | date}}
                         </footer>
-                        <button class="btn btn-primary marginTopBottom" ng-show="!task.isDone" ng-click="task.isDone = true">Done</button>
+                                
                         </div>
-                        </div>  
+                            <a data-toggle="modal" href='#taskModal{{task.id}}' id="taskItem" class="btn icon-btn btn-primary btn-small">Details &raquo;</a>
+                            
+                        </div>
+                            <button class="btn btn-primary marginTopBottom" ng-show="!task.isDone" ng-click="task.isDone = true">Done</button>
+                                  
                     </blockquote>
                     </div>
+                    
                     <div role="tabpanel" class="tab-pane fade" id="personalList">
                         <blockquote ng-repeat="task in tasks | filter: filterPersonal | orderBy:sortBy.choose">
                         <div class="media">
@@ -162,6 +203,7 @@
                         </div>  
                     </blockquote>
                     </div>
+                    
                     <div role="tabpanel" class="tab-pane fade" id="historyList">
                         <blockquote ng-repeat="task in tasks | filter: filterHistory | orderBy:sortBy.choose">
                         <div class="media">
@@ -181,7 +223,154 @@
                         </div>  
                     </blockquote>
                     </div>
+                    
+                    <div role="tabpanel" class="tab-pane fade in active" id="allList">
+                        <blockquote ng-repeat="task in tasks">
+                        <div class="media">
+                            <div class="media-body">
+                            <h2 class="media-heading">
+                            {{task.text}}
+                            </h2>
+                            <footer>
+                            {{task.dueDate | date}}
+                        </footer>
+                                
+                        </div>
+                            <a data-toggle="modal" href='#taskModal{{task.id}}' id="taskItem" class="btn icon-btn btn-primary btn-small">Details &raquo;</a>
+                            
+                        </div> 
+                            
+                            <div id="taskModal{{task.id}}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">{{task.text}}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editTaskForm" ng-submit="editTask(task, task.id)" novalidate role="form">
+                                
+                                <div class="form-group">
+                        <label for="text" class="col-sm-2 control-label">Title</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control" id="textEdit{{task.id}}" name="text" value="{{task.text}}" required>  
+                        </div>
+                    </div>
+                                <div class="form-group">
+                        <label for="description" class="col-sm-2 control-label">Description</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control" id="descriptionEdit{{task.id}}" name="description" value="{{task.description}}">  
+                        </div>
+                    </div>
+                                
+                                <div class="form-group form-inline" id="dueDateEdit">
+                         <label for="dueDate" class="col-sm-2 control-label">Date</label>
+                         <div class="form-group has-feedback">
+                             <input type="text" class="form-control" id="dueDate{{task.id}}" aria-describedby="dueDate" placeholder="Date">
+                             <i class="glyphicon glyphicon-calendar form-control-feedback" aria-hidden="true"></i>
+                                    </div>                         
+                   </div>
+                        
+                                <button type="submit" class="btn btn-info">Edit</button>
+                                <button type="button" class="btn btn-default"
+                                   data-dismiss="modal">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                    </div>
                 </div>
+                            
+<!--
+                            <div id="addTaskModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+         Modal content
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add task </h4>
+            </div>
+            <div class="modal-body">
+                <div ng-controller="TaskFormController">
+                <form id="submitTaskForm" class="form-horizontal" name="taskForm"
+                		ng-submit="submitTask()" novalidate role="form">
+                    
+                    <div class="form-group" ng-class="{ 'has-error' : taskForm.title.$error.required && !taskForm.title.$pristine }">
+                        <label for="title" class="col-sm-2 control-label">Title</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Enter Title"
+                        ng-model="taskObject.title" required>
+                        <span ng-show="taskForm.title.$error.required && !taskForm.title.$pristine" class="help-block">Title is required.</span>    
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" ng-class="{ 'has-error' : taskForm.assignee.$error.required && !taskForm.assignee.$pristine }">
+                        <label for="assignee" class="col-sm-2 control-label">Assignee</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control" id="assignee" name="assignee" placeholder="Enter Assignee"
+                        ng-model="taskObject.assignee" required>
+                        <span ng-show="taskForm.assignee.$error.required && !taskForm.assignee.$pristine" class="help-block">Assignee name is required.</span>    
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" ng-class="{ 'has-error' : taskForm.assigner.$error.required && !taskForm.assigner.$pristine }">
+                        <label for="assigner" class="col-sm-2 control-label">Enter your name</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control" id="assigner" name="assigner" placeholder="Enter your name"
+                        ng-model="taskObject.assigner" required>
+                        <span ng-show="taskForm.assigner.$error.required && !taskForm.assigner.$pristine" class="help-block">Your Name is required.</span>    
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                            <label for="isPersonal" class="col-sm-2 control-label">Personal Task</label>
+                        <div class="radio col-sm-5">
+                            <label class="radio-inline">
+                                <input type="radio"
+                                ng-model="taskObject.isPersonal" ng-value="true">
+                                <strong>Yes</strong>
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio"
+                                ng-model="taskObject.isPersonal" ng-value="false">
+                                <strong>No</strong>
+                            </label>
+                        </div>
+                    </div>
+                   
+                    <div class="form-group" ng-class="{ 'has-error' : taskForm.description.$error.required && !taskForm.description.$pristine }">
+                        <label for="description" class="col-sm-2 control-label">Task Description</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="12" name="description"
+                                ng-model="taskObject.description" required>
+                            </textarea>
+                            <span ng-show="taskForm.description.$error.required && !taskForm.description.$pristine" class="help-block">The description is required.</span>
+                        </div>
+                    </div> 
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary" ng-disabled="taskForm.$invalid">Submit Task</button>
+                            <button type="button" class="btn btn-default"
+                            data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                    
+                </form>
+                </div>  
+            </div>
+        </div>
+        </div>
+        </div>
+-->
+                            
+                            
+                    
+                    </blockquote>
+                    </div>
+                    
+                </div>
+
+                                    
             </div>
             </div>        
             <div class="col-xs-9">
@@ -203,7 +392,7 @@
             </div>
             <div class="modal-body">
                 <div ng-controller="TaskFormController">
-                <form class="form-horizontal" name="taskForm"
+                <form id="submitTaskForm" class="form-horizontal" name="taskForm"
                 		ng-submit="submitTask()" novalidate role="form">
                     
                     <div class="form-group" ng-class="{ 'has-error' : taskForm.title.$error.required && !taskForm.title.$pristine }">
@@ -277,11 +466,12 @@
     
     <!-- build:js scripts/main.js -->
     <script src="scripts/jquery.min.js"></script>
+    <script src="scripts/jquery-ui.min.js"></script>
     <script src="scripts/bootstrap.min.js"></script>
   <script src="scripts/angular.js"></script>
   <script src="scripts/app.js"></script>
     <script src="scripts/myscript.js"></script>
-    
+    <script src="scripts/ajax.js"></script>
     <!-- endbuild -->
 </body>
 
