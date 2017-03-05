@@ -4,9 +4,9 @@ angular.module('lush', [])
 
 .controller('TaskController', function($scope) {
     
-    $scope.sortList = ['title', 'date'];
-    $scope.sortBy = { choose: 'title' };
-    console.log($scope.sortBy);
+//    $scope.sortList = ['title', 'date'];
+//    $scope.sortBy = { choose: 'title' };
+//    console.log($scope.sortBy);
     
     $scope.testObject = function(sortObj){
         return sortObj == $scope.sortBy.choose;
@@ -15,7 +15,7 @@ angular.module('lush', [])
     // Filter Tab panel
     $scope.filterAssign = function (task){
         if(!task.isDone){
-            return task;
+            return true;
         }
         return;
     }
@@ -93,44 +93,49 @@ angular.module('lush', [])
 
 .controller('TaskFormController', ['$scope', function($scope) {
     
-    $scope.taskObject = {title: "", assignee: "", description: "", assigner:"", date:"", isPersonal: true, isDone: false};
+//    $scope.taskObject = {title: "", assignee: "", description: "", assigner:"", date:"", isPersonal: true, isDone: false};
+    
+    $scope.taskObject = {
+        "dueDate": "2017-12-31T00:00:00+02:00",
+        "isDone": false,
+        "text": ""
+    }
     
     $scope.submitTask = function() {
-        console.log($scope.taskObject);
-        console.log($scope.sortBy);
-        $scope.taskObject.date = new Date().toISOString();
+    
+        var assignee = $("#assignee").val();
+        $scope.taskObject.text = $("#title").val();
         
-        console.log($scope.taskObject);
-        $scope.tasks.push($scope.taskObject);
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: 'http://localhost:8080/Taskzone/api/users/'+assignee+'/tasks',
+            contentType: 'application/json',
+            data: JSON.stringify($scope.taskObject),
+            success: function() {
+                console.log("add Task Completed")
+            }
+        });
+        
+        $scope.tasks = [];
+        $scope.getTasks();
+        
+        
+//        $scope.tasks.push($scope.taskObject);
         
         $scope.taskForm.$setPristine();
-        $scope.taskObject = {title: "", assignee: "", description: "", assigner:"", date:"", isPersonal: true, isDone: false};
+//        $scope.taskObject = {title: "", assignee: "", description: "", assigner:"", date:"", isPersonal: true, isDone: false};
         
-        $('#addTaskModal').modal('hide');
-        $('.modal-backdrop').remove();
+        $scope.taskObject = {
+        "dueDate": "2017-12-31T00:00:00+02:00",
+        "isDone": false,
+        "text": ""
+        }
+        
     };
     
 }])
 
-.controller('LoginController', ['$scope', function($scope) {
-    
-    $scope.taskObject = {title: "", assignee: "", description: "", assigner:"", date:"", isPersonal: true, isDone: false};
-    
-    $scope.submitTask = function() {
-        console.log($scope.taskObject);
-        console.log($scope.sortBy);
-        $scope.taskObject.date = new Date().toISOString();
-        
-        console.log($scope.taskObject);
-        $scope.tasks.push($scope.taskObject);
-        
-        $scope.taskForm.$setPristine();
-        $scope.taskObject = {title: "", assignee: "", description: "", assigner:"", date:"", isPersonal: true, isDone: false};
-    };
-    
-    
-    
-}])
 
 .controller('UserController', ['$scope', function($scope) {
     
@@ -141,32 +146,29 @@ angular.module('lush', [])
         isManager: true,
     };
 
-    $scope.tasks = [];
+    $scope.getTasks = function(){
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: 'http://localhost:8080/Taskzone/api/users/'+$scope.user.username+'/tasks',
+            dateType: 'application/json',
+            success: function(data) {
+                console.log(data);
+                $scope.tasks = data;
+            }
+        });
+    }
     
-    $.ajax({
-        type: "GET",
-        async: false,
-        url: 'http://localhost:8080/Taskzone/api/users/'+$scope.user.username+'/tasks',
-        dateType: 'application/json',
-        success: function(data) {
-            console.log(data);
-            $scope.tasks = data;
-        }
-    });
+    $scope.tasks = [];
+    $scope.getTasks();
+    
+    console.log("duoi");
+    console.log($scope.tasks);
       
-    $scope.editTask = function(task, id){
-        console.log("chuan bi")
-        console.log(task);
-        console.log(id);
-        console.log($("#textEdit").val());
-        var newData = {};
-        newData["created"] = task.created;
-        newData["description"] = $("#descriptionEdit"+id).val();
-        newData["dueDate"] = task.dueDate;
-        newData["feedback"] = task.feedback;
-        newData["id"] = task.id;
-        newData["isDone"] = task.isDone;
-        newData["text"] = $("#textEdit"+id).val();
+    $scope.editTaskAssign = function(task, id){
+        var newData = task;
+        newData["description"] = $("#descriptionEditAssign"+id).val();
+        newData["text"] = $("#textEditAssign"+id).val();
         
         $.ajax({
             type: "PUT",
@@ -182,16 +184,100 @@ angular.module('lush', [])
                         $scope.tasks[i] = editedTask;
                     }
                 }
-                $('#editTaskModal').modal('hide');
+                $('#taskModalAssign'+editedTask.id).modal('hide');
                 $('.modal-backdrop').remove();
                 $("body").removeClass("modal-open");
             }
+        });  
+    }
+    
+    $scope.editTaskAll = function(task, id){
+        var newData = task;
+        newData["description"] = $("#descriptionEditAll"+id).val();
+        newData["text"] = $("#textEditAll"+id).val();
+        
+        $.ajax({
+            type: "PUT",
+            async: false,
+            url: 'http://localhost:8080/Taskzone/api/users/'+$scope.user.username+'/tasks/'+task.id,
+            contentType: 'application/json',
+            data: JSON.stringify(newData),
+            success: function(editedTask) {
+                console.log("sau khi edit")
+                console.log(editedTask);
+                for (var i = 0; i < $scope.tasks.length; i++) { 
+                    if($scope.tasks[i].id == editedTask.id){
+                        $scope.tasks[i] = editedTask;
+                    }
+                }
+                $('#taskModalAll'+editedTask.id).modal('hide');
+                $('.modal-backdrop').remove();
+                $("body").removeClass("modal-open");
+            }
+        });  
+    }
+    
+    $scope.editTaskHistory = function(task, id){
+        var newData = task;
+        newData["description"] = $("#descriptionEditHistory"+id).val();
+        newData["text"] = $("#textEditHistory"+id).val();
+        
+        $.ajax({
+            type: "PUT",
+            async: false,
+            url: 'http://localhost:8080/Taskzone/api/users/'+$scope.user.username+'/tasks/'+task.id,
+            contentType: 'application/json',
+            data: JSON.stringify(newData),
+            success: function(editedTask) {
+                console.log("sau khi edit")
+                console.log(editedTask);
+                for (var i = 0; i < $scope.tasks.length; i++) { 
+                    if($scope.tasks[i].id == editedTask.id){
+                        $scope.tasks[i] = editedTask;
+                    }
+                }
+                $('#taskModalHistory'+editedTask.id).modal('hide');
+                $('.modal-backdrop').remove();
+                $("body").removeClass("modal-open");
+            }
+        });  
+    }
+    
+    $scope.taskDoneFunc = function(task) {
+        var newTask = task;
+        newTask.isDone = true;
+        $.ajax({
+            type: "PUT",
+            async: false,
+            url: 'http://localhost:8080/Taskzone/api/users/'+$scope.user.username+'/tasks/'+task.id,
+            contentType: 'application/json',
+            data: JSON.stringify(newTask),
+            success: function(editedTask) {
+                console.log("sau khi edit")
+                console.log(editedTask);
+                for (var i = 0; i < $scope.tasks.length; i++) { 
+                    if($scope.tasks[i].id == editedTask.id){
+                        $scope.tasks[i] = editedTask;
+                    }
+                }
+            }
+        });
+    };
+    
+    $scope.taskDeleteFunc = function(task) {
+        $.ajax({
+            type: "DELETE",
+            async: false,
+            url: 'http://localhost:8080/Taskzone/api/users/'+$scope.user.username+'/tasks/'+task.id,
+            contentType: 'application/json',
+            success: function() {
+                console.log("deleted");
+            }
         });
         
-        console.log("asd");
-        
-        
-    }
+        $scope.tasks = [];
+        $scope.getTasks();
+    };
     
 }])
 
