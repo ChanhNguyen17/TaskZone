@@ -1,17 +1,17 @@
 $(document).ready(function() {
-    $('#submitTaskForm').submit(function() {
-        console.log('ok');
-        $.ajax({
-            url: 'http://localhost:8080/Taskzone/api/users',
-            type: 'GET',
-            async: false,
-            contentType: 'application/xml',
-            data: $('submitTaskForm').serialize(),
-            success: function (response) {
-                console.log("done");
-            }
-        });
-    });
+//    $('#submitTaskForm').submit(function() {
+//        console.log('ok');
+//        $.ajax({
+//            url: 'http://localhost:8080/Taskzone/api/users',
+//            type: 'GET',
+//            async: false,
+//            contentType: 'application/xml',
+//            data: $('submitTaskForm').serialize(),
+//            success: function (response) {
+//                console.log("done");
+//            }
+//        });
+//    });
     
     $('#addUserForm').submit(function() {
         var data = {};

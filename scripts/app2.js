@@ -2,22 +2,11 @@
 
 angular.module('lush', [])
 
-//.config(function ($routeProvider) {
-//    $routeProvider
-//    .when('/login', {
-//        templateUrl: 'login.html',
-////        controller: 'LoginController'
-//    })
-//
-//})
-
 .controller('TaskController', function($scope) {
     
 //    $scope.sortList = ['title', 'date'];
 //    $scope.sortBy = { choose: 'title' };
 //    console.log($scope.sortBy);
-    
-    console.log("task here");
     
     $scope.testObject = function(sortObj){
         return sortObj == $scope.sortBy.choose;
@@ -107,7 +96,6 @@ angular.module('lush', [])
 //    $scope.taskObject = {title: "", assignee: "", description: "", assigner:"", date:"", isPersonal: true, isDone: false};
     
     $scope.taskObject = {
-        "title":"",
         "dueDate": "2017-12-31T00:00:00+02:00",
         "isDone": false,
         "text": ""
@@ -116,13 +104,7 @@ angular.module('lush', [])
     $scope.submitTask = function() {
     
         var assignee = $("#assignee").val();
-        $scope.taskObject.title = $("#title").val();
-        $scope.taskObject.text = $("#text").val();
-        
-        var dateTypeVar = $("#addDueDate").datepicker('getDate');
-        var date = $.datepicker.formatDate('yy-mm-dd', dateTypeVar);
-                
-        $scope.taskObject.dueDate = date+'T15:05:04+02:00';
+        $scope.taskObject.text = $("#title").val();
         
         $.ajax({
             type: "POST",
@@ -131,12 +113,7 @@ angular.module('lush', [])
             contentType: 'application/json',
             data: JSON.stringify($scope.taskObject),
             success: function() {
-                console.log("add Task Completed");
-                $( function() {
-                    $( ".datepicker" ).datepicker({
-                        dateFormat: 'M d, yy',
-                    });
-                });
+                console.log("add Task Completed")
             }
         });
         
@@ -168,10 +145,7 @@ angular.module('lush', [])
         password: 'qwerty',
         isManager: true,
     };
- 
-    console.log("loading");
-//    console.log(sharedProperties.getProperty());
-    
+
     $scope.getTasks = function(){
         $.ajax({
             type: "GET",
@@ -183,45 +157,19 @@ angular.module('lush', [])
                 $scope.tasks = data;
             }
         });
-    };
-    
-    console.log("fun");
-    $scope.tasks = [];
-    if($scope.user.username!=''){
-        $scope.getTasks();
     }
     
-//    $scope.loginSubmit = function() {
-//        console.log("ok");
-//        var userLogin = $("#userNameLogin").val();
-//        var passwordLogin = $("#passwordLogin").val();
-//        $scope.user.username = userLogin;
-//        $scope.user.password = passwordLogin;
-//        window.location.href = "index.html";
-//        $scope.getTasks();
-//    };
-
-    for (var i = 0; i < $scope.tasks.length; i++) { 
-
-        var date = $scope.tasks[i].dueDate;
-        date = new Date(date);
-        
-        $scope.tasks[i].dueDate = date;
-    };
+    $scope.tasks = [];
+    $scope.getTasks();
     
     console.log("duoi");
     console.log($scope.tasks);
       
     $scope.editTaskAssign = function(task, id){
         var newData = task;
-        newData["text"] = $("#descriptionEditAssign"+id).val();
-        newData["title"] = $("#titleEditAssign"+id).val();
+        newData["description"] = $("#descriptionEditAssign"+id).val();
+        newData["text"] = $("#textEditAssign"+id).val();
         
-        var dateTypeVar = $("#dueDateAssign"+id).datepicker('getDate');
-        var date = $.datepicker.formatDate('yy-mm-dd', dateTypeVar);
-                
-        newData["dueDate"] = date+'T15:05:04+02:00';
-
         $.ajax({
             type: "PUT",
             async: false,
@@ -229,6 +177,8 @@ angular.module('lush', [])
             contentType: 'application/json',
             data: JSON.stringify(newData),
             success: function(editedTask) {
+                console.log("sau khi edit")
+                console.log(editedTask);
                 for (var i = 0; i < $scope.tasks.length; i++) { 
                     if($scope.tasks[i].id == editedTask.id){
                         $scope.tasks[i] = editedTask;
@@ -237,25 +187,14 @@ angular.module('lush', [])
                 $('#taskModalAssign'+editedTask.id).modal('hide');
                 $('.modal-backdrop').remove();
                 $("body").removeClass("modal-open");
-                
-                $( function() {
-                    $( ".datepicker" ).datepicker({
-                        dateFormat: 'M d, yy',
-                    });
-                });
             }
         });  
-    };
+    }
     
     $scope.editTaskAll = function(task, id){
         var newData = task;
-        newData["text"] = $("#descriptionEditAll"+id).val();
-        newData["title"] = $("#textEditAll"+id).val();
-   
-        var dateTypeVar = $("#dueDateAll"+id).datepicker('getDate');
-        var date = $.datepicker.formatDate('yy-mm-dd', dateTypeVar);
-                
-        newData["dueDate"] = date+'T15:05:04+02:00';
+        newData["description"] = $("#descriptionEditAll"+id).val();
+        newData["text"] = $("#textEditAll"+id).val();
         
         $.ajax({
             type: "PUT",
@@ -264,6 +203,8 @@ angular.module('lush', [])
             contentType: 'application/json',
             data: JSON.stringify(newData),
             success: function(editedTask) {
+                console.log("sau khi edit")
+                console.log(editedTask);
                 for (var i = 0; i < $scope.tasks.length; i++) { 
                     if($scope.tasks[i].id == editedTask.id){
                         $scope.tasks[i] = editedTask;
@@ -272,25 +213,14 @@ angular.module('lush', [])
                 $('#taskModalAll'+editedTask.id).modal('hide');
                 $('.modal-backdrop').remove();
                 $("body").removeClass("modal-open");
-                
-                $( function() {
-                    $( ".datepicker" ).datepicker({
-                        dateFormat: 'M d, yy',
-                    });
-                });
             }
         });  
-    };
+    }
     
     $scope.editTaskHistory = function(task, id){
         var newData = task;
-        newData["text"] = $("#descriptionEditHistory"+id).val();
-        newData["title"] = $("#textEditHistory"+id).val();
-        
-        var dateTypeVar = $("#dueDateHistory"+id).datepicker('getDate');
-        var date = $.datepicker.formatDate('yy-mm-dd', dateTypeVar);
-                
-        newData["dueDate"] = date+'T15:05:04+02:00';
+        newData["description"] = $("#descriptionEditHistory"+id).val();
+        newData["text"] = $("#textEditHistory"+id).val();
         
         $.ajax({
             type: "PUT",
@@ -299,6 +229,8 @@ angular.module('lush', [])
             contentType: 'application/json',
             data: JSON.stringify(newData),
             success: function(editedTask) {
+                console.log("sau khi edit")
+                console.log(editedTask);
                 for (var i = 0; i < $scope.tasks.length; i++) { 
                     if($scope.tasks[i].id == editedTask.id){
                         $scope.tasks[i] = editedTask;
@@ -307,15 +239,9 @@ angular.module('lush', [])
                 $('#taskModalHistory'+editedTask.id).modal('hide');
                 $('.modal-backdrop').remove();
                 $("body").removeClass("modal-open");
-                
-                $( function() {
-                    $( ".datepicker" ).datepicker({
-                        dateFormat: 'M d, yy',
-                    });
-                });
             }
         });  
-    };
+    }
     
     $scope.taskDoneFunc = function(task) {
         var newTask = task;
@@ -327,6 +253,8 @@ angular.module('lush', [])
             contentType: 'application/json',
             data: JSON.stringify(newTask),
             success: function(editedTask) {
+                console.log("sau khi edit")
+                console.log(editedTask);
                 for (var i = 0; i < $scope.tasks.length; i++) { 
                     if($scope.tasks[i].id == editedTask.id){
                         $scope.tasks[i] = editedTask;
@@ -352,49 +280,5 @@ angular.module('lush', [])
     };
     
 }])
-.controller('LoginController', ['$scope', function($scope) {
-
-    $scope.loginSubmit = function() {
-        console.log("ok");
-        var userLogin = $("#userNameLogin").val();
-        var passwordLogin = $("#passwordLogin").val();
-        UserService.username = userLogin;
-        UserService.password = passwordLogin;
-//        window.location.href = "index.html";
-        console.log(sharedProperties.getProperty());
-        sharedProperties.setProperty('second');
-        console.log(sharedProperties.getProperty());
-        window.location.href = "index.html";
-    };
-
-    
-}])
-
-//.factory('UserService', function() {
-//    console.log("asdasd");
-//  return {
-//        username: '',
-//        fullname: 'abc',
-//        password: '',
-//        isManager: false,
-//  };
-//})
-// .service('sharedProperties', function () {
-//        var property = 'First';
-//
-//        return {
-//            getProperty: function () {
-//                return property;
-//            },
-//            setProperty: function(value) {
-//                property = value;
-//            }
-//        };
-//    })
 
 ;
-    
-    
-    
-    
-    

@@ -14,3 +14,15 @@ $("#addTaskButton").click(function(){
 $("#taskItem").click(function(){
     $("#taskModal").modal("show");
 });
+
+$( function() {
+    $( ".datepicker" ).datepicker({
+        dateFormat: 'M d, yy',
+//        altField: '#thealtdate',
+//        altFormat: 'yy-mm-dd'
+    });
+});
+
+
+
+
