@@ -137,6 +137,9 @@ angular.module('lush', [])
                         dateFormat: 'M d, yy',
                     });
                 });
+                $('#addTaskModal').modal('hide');
+                $('.modal-backdrop').remove();
+                $("body").removeClass("modal-open");
             }
         });
         
@@ -332,6 +335,9 @@ angular.module('lush', [])
                         $scope.tasks[i] = editedTask;
                     }
                 }
+                $('#taskDoneModalAssign'+editedTask.id).modal('hide');
+                $('.modal-backdrop').remove();
+                $("body").removeClass("modal-open");
             }
         });
     };

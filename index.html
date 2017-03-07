@@ -184,14 +184,50 @@
                             <footer class="marginTopBottom">
                             {{task.dueDate | date}}
                         </footer>
-                                   
                         </div>
                             
                         </div>
                               <div class="col-xs-2">
+                                  <div data-toggle="modal" href='#taskDoneModalAssign{{task.id}}'>
                             <button data-toggle="tooltip" title="Done" class="btn btn-success btn-block"
                                     id="taskDoneButton"
+                                    ng-show="!task.isDone"><span class="glyphicon glyphicon-check"></span></button>
+                                      </div>
+                                  
+                                  <div id="taskDoneModalAssign{{task.id}}" class="modal fade" role="dialog">
+                                  
+                                      <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">{{task.title}}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form id="taskDoneFormAssign" ng-submit="taskDoneFunc(task)" novalidate role="form">
+                                
+                                <div class="form-group">
+                        <label for="description" class="col-sm-3 control-label">Feedback</label>
+                        <div class="col-sm-9">
+                        <textarea placeholder="Your feedback..." type="text" class="form-control" rows="5" name="feedback" id="feedbackAssign{{task.id}}" name="text"></textarea> 
+                        </div>
+                    </div>
+                                
+                                <button type="submit" class="btn btn-info">Done</button>
+                                <button type="button" class="btn btn-default"
+                                   data-dismiss="modal">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                    </div>
+                                  
+                                  </div>
+                                  
+<!--
+                                  <button data-toggle="tooltip" title="Done" class="btn btn-success btn-block"
+                                    id="taskDoneButton"
                                     ng-show="!task.isDone" ng-click="taskDoneFunc(task)"><span class="glyphicon glyphicon-check"></span></button>
+-->
                             
                             <button ng-show="user.isManager" data-toggle="tooltip" title="Delete" class="marginTopBottom btn btn-danger btn-block"
                                     id="taskDeleteButton"
@@ -465,7 +501,7 @@
         </div>
         </div>
         </div>
-        </div>
+        </div>      
     </div>
 
     <!-- build:js scripts/main.js -->
